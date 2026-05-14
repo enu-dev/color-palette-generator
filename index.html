@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Palette Generator — 配色パレット生成ツール</title>
+  <meta name="description" content="配色理論に基づいてパレットを自動生成。補色・類似色・トライアドなど6種類。HEX/RGB/HSL対応。CSS変数として出力可能。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ===== Header ===== -->
+    <header class="header">
+      <h1 class="header-title"><span class="accent">Color</span> Palette Generator</h1>
+      <p class="header-sub">配色理論で、センスのいい色を</p>
+    </header>
+
+    <main>
+
+      <!-- ===== カラー入力 ===== -->
+      <section class="card input-section" aria-label="カラー入力">
+        <div class="input-group">
+
+          <!-- プレビュー・HEX入力・ピッカー -->
+          <div class="preview-col">
+            <div class="color-preview" id="colorPreview"></div>
+            <div class="hex-row">
+              <div class="hex-input-wrap">
+                <span class="hex-hash">#</span>
+                <input
+                  type="text"
+                  class="hex-input"
+                  id="hexInput"
+                  value="00d4ff"
+                  maxlength="6"
+                  placeholder="00d4ff"
+                  aria-label="HEXカラーコード"
+                  autocomplete="off"
+                  spellcheck="false"
+                >
+              </div>
+              <input
+                type="color"
+                class="color-picker"
+                id="colorPicker"
+                value="#00d4ff"
+                title="カラーピッカー"
+                aria-label="カラーピッカー"
+              >
+            </div>
+          </div>
+
+          <!-- HSL スライダー -->
+          <div class="hsl-sliders" aria-label="HSL調整">
+            <div class="slider-row">
+              <label class="slider-label" for="hSlider">H</label>
+              <input type="range" class="slider" id="hSlider" min="0" max="360" value="195" aria-label="色相">
+              <span class="slider-val" id="hValue">195°</span>
+            </div>
+            <div class="slider-row">
+              <label class="slider-label" for="sSlider">S</label>
+              <input type="range" class="slider" id="sSlider" min="0" max="100" value="100" aria-label="彩度">
+              <span class="slider-val" id="sValue">100%</span>
+            </div>
+            <div class="slider-row">
+              <label class="slider-label" for="lSlider">L</label>
+              <input type="range" class="slider" id="lSlider" min="0" max="100" value="50" aria-label="明度">
+              <span class="slider-val" id="lValue">50%</span>
+            </div>
+          </div>
+
+        </div>
+        <button class="btn btn-random" id="randomBtn">🎲 ランダム生成</button>
+      </section>
+
+      <!-- ===== 配色タイプ選択 ===== -->
+      <section class="card" aria-label="配色理論の選択">
+        <div class="harmony-tabs" id="harmonyTabs" role="tablist">
+
+          <button class="harmony-tab active" role="tab" aria-selected="true" data-harmony="complementary">
+            <span class="tab-name">補色</span>
+            <span class="tab-desc">インパクトのあるコントラスト</span>
+          </button>
+          <button class="harmony-tab" role="tab" aria-selected="false" data-harmony="analogous">
+            <span class="tab-name">類似色</span>
+            <span class="tab-desc">調和の取れた優しい配色</span>
+          </button>
+          <button class="harmony-tab" role="tab" aria-selected="false" data-harmony="triadic">
+            <span class="tab-name">トライアド</span>
+            <span class="tab-desc">バランスの良い3色配色</span>
+          </button>
+          <button class="harmony-tab" role="tab" aria-selected="false" data-harmony="split">
+            <span class="tab-name">スプリット</span>
+            <span class="tab-desc">補色の穏やかなバリエーション</span>
+          </button>
+          <button class="harmony-tab" role="tab" aria-selected="false" data-harmony="tetradic">
+            <span class="tab-name">テトラード</span>
+            <span class="tab-desc">豊かな4色の組み合わせ</span>
+          </button>
+          <button class="harmony-tab" role="tab" aria-selected="false" data-harmony="monochromatic">
+            <span class="tab-name">モノクロ</span>
+            <span class="tab-desc">明度違いの統一感ある配色</span>
+          </button>
+
+        </div>
+      </section>
+
+      <!-- ===== パレット表示 ===== -->
+      <section class="card palette-section" aria-label="生成されたパレット">
+
+        <!-- 出力形式切り替え -->
+        <div class="format-switcher" role="group" aria-label="カラー形式">
+          <button class="format-btn active" data-format="hex" aria-pressed="true">HEX</button>
+          <button class="format-btn" data-format="rgb" aria-pressed="false">RGB</button>
+          <button class="format-btn" data-format="hsl" aria-pressed="false">HSL</button>
+        </div>
+
+        <!-- カラーチップ（クリックでコピー） -->
+        <div class="palette-chips" id="paletteChips" aria-label="カラーチップ — クリックでコピー">
+          <!-- JS で生成 -->
+        </div>
+
+        <!-- エクスポート -->
+        <div class="export-group">
+          <button class="btn btn-export" id="exportCssBtn">CSS変数としてコピー</button>
+          <button class="btn btn-export" id="exportJsonBtn">JSONとしてコピー</button>
+          <button class="btn btn-export" id="saveFavBtn">⭐ お気に入り保存</button>
+        </div>
+
+        <!-- アクセシビリティ情報（WCAG コントラスト比） -->
+        <div class="a11y-info" id="a11yInfo" aria-label="コントラスト比">
+          <!-- JS で生成 -->
+        </div>
+
+      </section>
+
+      <!-- ===== お気に入り・履歴 ===== -->
+      <section class="card" id="favSection">
+        <div
+          class="fav-header"
+          id="favToggle"
+          role="button"
+          aria-expanded="false"
+          tabindex="0"
+        >
+          <span class="fav-header-title">お気に入り &amp; 履歴</span>
+          <span class="toggle-icon" aria-hidden="true">▼</span>
+        </div>
+        <div class="fav-content" id="favContent">
+          <div id="favList"></div>
+          <div id="historyList"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- トースト通知 -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
